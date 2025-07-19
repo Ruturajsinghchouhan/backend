@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const url = "mongodb://localhost:27017/ai";
+const url = "mongodb+srv://crituraj008:siyaram.@cluster0.xhg7ggs.mongodb.net/travel-ai?retryWrites=true&w=majority&appName=Cluster0";
 
 mongoose.connect(url);
 
