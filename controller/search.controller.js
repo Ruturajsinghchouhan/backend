@@ -1,13 +1,13 @@
-// controllers/searchController.js
-
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import AbortController from "abort-controller";
 
-// Make sure you store your key securely in .env file
-const genAI = new GoogleGenerativeAI( "AIzaSyARIHmFiqBpN6zr6mQDFJ4V5L3nL-W3cuo");
+// Use hardcoded key for now
+const genAI = new GoogleGenerativeAI("AIzaSyARIHmFiqBpN6zr6mQDFJ4V5L3nL-W3cuo");
 
 export const getTravelData = async (req, res) => {
   try {
     const { from, to, date } = req.body;
+    console.log("📥 Request Body:", req.body);
 
     if (!from || !to || !date) {
       return res.status(400).json({ error: "Missing required fields: from, to, or date" });
@@ -36,13 +36,24 @@ Include:
 `;
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
-    const result = await model.generateContent(prompt);
+
+    // Timeout (max wait 20s)
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 20000);
+
+    const result = await model.generateContent(prompt, { signal: controller.signal });
+    clearTimeout(timeoutId);
+
     const response = await result.response;
     const text = response.text();
 
     return res.status(200).json({ success: true, text });
   } catch (err) {
-    console.error("Gemini API error:", err.message);
-    return res.status(500).json({ error: "Gemini API failed. Try again later." });
+    console.error("❌ Gemini Error:", err.message || err);
+    let msg = err.name === "AbortError"
+      ? "Gemini API timed out. Try again."
+      : "Gemini API failed. Try again later.";
+
+    return res.status(500).json({ error: msg });
   }
 };
