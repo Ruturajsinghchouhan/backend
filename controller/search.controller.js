@@ -20,7 +20,7 @@ Give me 3 best travel options from "${from}" to "${to}" for the date "${date}"..
 (Your full prompt continues here...)
 `;
 
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 20000);
