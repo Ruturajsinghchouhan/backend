@@ -10,7 +10,7 @@ import userSchemaModel from '../model/user.model.js';
     console.log("bgjsknldmg");
     var len =userList.length;
      var _id = (len==0)?1:userList[len-1]._id+1;
-   var userDetail ={...req.body,"_id":_id,"role":"user","status":0,"info":Date()};  
+   var userDetail ={...req.body,"_id":_id,"role":"user","status":1,"info":Date()};  
    try{
     const users =await userSchemaModel.create(userDetail);
     res.status(201).json({"status":"Resoure reated successfully"});
