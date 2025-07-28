@@ -15,6 +15,7 @@
     "@babel/node": "^7.27.1",
     "@babel/preset-env": "^7.27.2",
     "@google/generative-ai": "^0.24.1",
+    "abort-controller": "^3.0.0",
     "babel-plugin-add-module-exports": "^1.0.4",
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
