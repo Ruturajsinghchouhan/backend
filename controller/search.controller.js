@@ -12,108 +12,90 @@ export const getTravelData = async (req, res) => {
       return res.status(400).json({ error: "Missing required fields: from, to, or date" });
     }
 
-   const prompt = `You're a smart AI travel assistant.
+const prompt = `You're an AI travel assistant.
 
 Your job is to help a user plan travel from **"${from}"** to **"${to}"** on **"${date}"**.
 
-First, **detect whether the trip is domestic or international** based on the origin and destination. If international, provide appropriate suggestions and document checklist.
+Determine if the trip is domestic or international based on Indian geography.
 
 ---
 
-### ✈️🚆🚌 Show 3 Best Travel Options:
+## 🚍✈️🚆 Show 3 Travel Options Per Mode:
 
-Provide the **top 3 travel options** for each transport mode:
+### ✈️ Flights:
+- Top 2–3 airlines
+- Approx. duration
+- Price range
+- Category (Low/Medium/High)
+- Booking Link: [Search Flights](https://www.skyscanner.co.in/transport/flights/${from}/${to}/${date}/)
 
-#### ✈️ **Flight**
-- Airlines (2–3)
+### 🚆 Trains:
+- 2 Train Names + Numbers
 - Duration
-- Price Range
-- Budget Category (Low / Medium / High)
-- Booking Link: [Skyscanner](https://www.skyscanner.co.in), [MakeMyTrip](https://www.makemytrip.com)
-
-#### 🚆 **Train**
-- Train Name & Number (2 options)
-- Duration
-- Price by Class (SL / 3A / 2A)
+- Price (SL / 3A / 2A)
 - Budget Category
-- Booking Link: [IRCTC](https://www.irctc.co.in), [Trainman](https://www.trainman.in)
+- Booking Link: [Search Trains](https://www.trainman.in/trains/from-${from}-to-${to})
 
-#### 🚌 **Bus**
-- Operator Names (2–3)
+### 🚌 Buses:
+- Operator names (2–3)
 - Duration
-- Price Range
-- Budget Category
-- Booking Link: [RedBus](https://www.redbus.in), [AbhiBus](https://www.abhibus.com)
+- Price range
+- Category
+- Booking Link: [Search Buses](https://www.redbus.in/bus-tickets/${from}-to-${to})
 
-⚠️ If no direct flight or train is available, write:
-**"❌ No direct option available. Please check real-time on booking sites."**
-
----
-
-### 📊 Cheapest Travel Comparison Table
-
-Create a **markdown table** comparing 3 options:
-
-| Mode   | Operator(s)      | Duration | Price Range | Category | Booking Link |
-|--------|------------------|----------|-------------|----------|--------------|
-| Flight | Example Airlines | 2h       | ₹4000–₹8000 | Medium   | [Skyscanner](https://www.skyscanner.co.in) |
-| Train  | Example Train    | 15h      | ₹500–₹2500  | Low      | [IRCTC](https://www.irctc.co.in) |
-| Bus    | Example Bus Co.  | 18h      | ₹600–₹1400  | Low-Med  | [RedBus](https://www.redbus.in) |
+If not available, write: “❌ No direct ${mode} found.”
 
 ---
 
-### 💡 AI Trip Advice
+## 📊 Cheapest Comparison Table
 
-Give a short suggestion:  
-**Example** – “✅ Take the train: cheaper and not much longer than the bus.”
+Create a markdown table:
 
----
-
-### 📄 Document Checklist
-
-**If Domestic Travel (India):**
-- ✅ Govt ID (Aadhaar, PAN, Driving License)
-- ✅ Tickets (Printed or Mobile)
-- ✅ Hotel Booking Confirmation
-- ✅ COVID Vaccination Certificate (if needed)
-
-**If International Travel:**
-- ✅ Passport (valid 6+ months)
-- ✅ Visa (if required)
-- ✅ Travel Insurance
-- ✅ Return Ticket
-- ✅ Hotel Booking
-- ✅ Currency or Forex Card
+| Mode   | Operator(s)   | Duration | Price    | Category | Link |
+|--------|---------------|----------|----------|----------|------|
+| Flight | Indigo, Vistara | 2h     | ₹4000–₹7000 | Medium | [Book](https://www.skyscanner.co.in/transport/flights/${from}/${to}/${date}/) |
+| Train  | Garib Rath     | 15h     | ₹300–₹1200 | Low     | [Book](https://www.trainman.in/trains/from-${from}-to-${to}) |
+| Bus    | Raj Travels     | 16h     | ₹600–₹1400 | Low     | [Book](https://www.redbus.in/bus-tickets/${from}-to-${to}) |
 
 ---
 
-### 🎒 What to Carry List
-- Clothes (weather-based)
-- Mobile charger + power bank
-- Medicines (basic)
-- Water + Snacks
-- Documents folder
+## 💡 AI Advice
+Suggest best value option.
 
 ---
 
-### 🌦️ Weather Forecast for ${to} on ${date}
-Provide weather details (temperature, sun/rain/cloud) and advice.  
-**Example**: “🌧️ 28°C and rainy. Carry umbrella and raincoat.”
+## 📄 Documents Checklist
+
+**Domestic (India):**
+- Aadhaar / Voter ID
+- Booking receipts
+- Hotel details
+
+**International:**
+- Passport + Visa
+- Insurance
+- Forex/Currency
 
 ---
 
-### 🌐 Respond in Hindi (Optional)
-
-If user prefers Hindi, give the **same information in Hindi**. Detect automatically from input or let the user choose.
+## 🎒 What to Carry
+- Seasonal clothes
+- Power bank, ID
+- Medicine kit
+- Food & water
 
 ---
 
-👉 Use **Markdown formatting** – bold headers, emojis, bullet points, and tables.  
-👉 Keep tone friendly, helpful, and travel-expert style.  
-👉 All booking links must be real and from trusted platforms.
+## 🌦️ Weather Info for ${to} on ${date}
+Give approx. weather and clothing tips.
 
-Your response should look like a well-organized **AI travel guide**.
+---
+
+## 🌐 Respond in Hindi if user used Hindi.
+
+Use markdown formatting. Be friendly and clear.
 `;
+
 
 
     const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
