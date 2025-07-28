@@ -2,19 +2,17 @@
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// ✅ Secure way: Use environment variable instead of hardcoding API key
-const genAI = new GoogleGenerativeAI("AIzaSyARIHmFiqBpN6zr6mQDFJ4V5L3nL-W3cuo");
+// Make sure you store your key securely in .env file
+const genAI = new GoogleGenerativeAI( "AIzaSyARIHmFiqBpN6zr6mQDFJ4V5L3nL-W3cuo");
 
 export const getTravelData = async (req, res) => {
   try {
     const { from, to, date } = req.body;
 
-    // 🔐 Input validation
     if (!from || !to || !date) {
       return res.status(400).json({ error: "Missing required fields: from, to, or date" });
     }
 
-    // 🎯 Prompt creation
     const prompt = `
 You're a smart AI travel assistant.
 
@@ -37,8 +35,7 @@ Include:
 ✅ Use **Markdown formatting**: emojis, **bold text**, clickable links, and tables.
 `;
 
-    // 🤖 Gemini API call
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" }); // or "gemini-2.5-pro" if supported in your access
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
