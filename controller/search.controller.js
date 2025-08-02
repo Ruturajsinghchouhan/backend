@@ -71,7 +71,7 @@ Generate a **detailed travel plan** for a trip from **"${from}" to "${to}"** on 
 `;
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+    const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
