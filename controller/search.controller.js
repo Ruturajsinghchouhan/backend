@@ -1,40 +1,91 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Replace with your real API key from https://makersuite.google.com/app/apikey
-const genAI = new GoogleGenerativeAI("AIzaSyARIHmFiqBpN6zr6mQDFJ4V5L3nL-W3cuo");
+// Replace with your real API key
+const genAI = new GoogleGenerativeAI("AIzaSyC0qzuEbZWolVJ83sIF3bTpJb5Yr-Eq6Ak");
 
 export const getTravelData = async (req, res) => {
   const { from, to, date } = req.body;
 
-const prompt = `You're a travel assistant.
+  const prompt = `
+You're a smart travel assistant AI.
 
-Give me 3 best travel options from "${from}" to "${to}" for the date "${date}".
+Generate a **detailed travel plan** for a trip from **"${from}" to "${to}"** on **"${date}"**.
 
-Include:
-✈️ **Flight** – airline, price range, duration, booking link (from platforms like [Skyscanner](https://www.skyscanner.co.in), [MakeMyTrip](https://www.makemytrip.com), [Goibibo](https://www.goibibo.com)), and budget category (**Low/Medium/High**)  
-🚆 **Train** – train name & number, classes & prices, duration, booking link (from [IRCTC](https://www.irctc.co.in) or [Trainman](https://www.trainman.in)), and budget category  (**Low/Medium/High**)
-🚌 **Bus** – direct or connecting, price range, duration, booking link (from [RedBus](https://www.redbus.in), [AbhiBus](https://www.abhibus.com)), and budget category(**Low/Medium/High**)
-**In not direct train and flight available say no available check and verfy to real time **
-**End with:**
-- A summary comparison table of minimum three flights,trains,buses as for every mode of transport mode low medium and high (in markdown table format) 
-- A short suggestion on which mode to prefer based on price and time
+### 🧭 Your response should return the following JSON structure (do not return markdown or code block):
 
-👉 Use **Markdown** formatting (including bold text, emojis, links, and markdown tables).
-Ensure all booking links point to trusted platforms that offer **discounted fares**, not generic or placeholder URLs.
-`;
-
-
-try {
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
-  const result = await model.generateContent(prompt);
-  const response = await result.response;
-  const text = response.text();
-
-  // Just return raw text as string for now
-  res.json({ text }); 
-} catch (err) {
-  console.error("Gemini error:", err.message);
-  res.status(500).json({ error: "Gemini API failed" });
+{
+  "flights": [
+    {
+      "airline": "",
+      "priceRange": "",
+      "duration": "",
+      "bookingLink": "",
+      "budgetCategory": "Low | Medium | High"
+    },
+    ...
+  ],
+  "trains": [
+    {
+      "trainName": "",
+      "trainNumber": "",
+      "classesAndPrices": "",
+      "duration": "",
+      "bookingLink": "",
+      "budgetCategory": "Low | Medium | High"
+    },
+    ...
+  ],
+  "buses": [
+    {
+      "type": "Direct | Connecting",
+      "priceRange": "",
+      "duration": "",
+      "bookingLink": "",
+      "budgetCategory": "Low | Medium | High"
+    },
+    ...
+  ],
+  "summaryComparison": {
+    "flight": { "low": "", "medium": "", "high": "" },
+    "train": { "low": "", "medium": "", "high": "" },
+    "bus": { "low": "", "medium": "", "high": "" }
+  },
+  "aiAdvice": "A short suggestion on best mode based on time and price.",
+  "checklist": [
+    "Documents to carry like ID, tickets",
+    "Weather-specific items",
+    "Personal essentials"
+  ],
+  "weatherInfo": {
+    "forecast": "",
+    "temperature": "",
+    "tips": ""
+  }
 }
 
+📌 Notes:
+- Use real booking platforms (like Skyscanner, IRCTC, RedBus, etc.) for links.
+- If no direct flight/train exists, mention "Not available".
+- For checklist, include helpful items based on common travel needs and destination weather.
+- Use proper JSON formatting only, no markdown, no explanation.
+`;
+
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-latest" });
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
+
+    // Attempt to safely parse the AI response
+    try {
+      const json = JSON.parse(text);
+      res.json(json);
+    } catch (parseError) {
+      console.warn("Parsing failed, sending raw text.");
+      res.json({ rawText: text });
+    }
+  } catch (err) {
+    console.error("Gemini error:", err.message);
+    res.status(500).json({ error: "Gemini API failed" });
+  }
 };
