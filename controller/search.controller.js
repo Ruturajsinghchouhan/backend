@@ -6,23 +6,72 @@ const genAI = new GoogleGenerativeAI("AIzaSyARIHmFiqBpN6zr6mQDFJ4V5L3nL-W3cuo");
 export const getTravelData = async (req, res) => {
   const { from, to, date } = req.body;
 
-const prompt = `You're a travel assistant.
+const prompt = `You're a smart AI travel assistant.
 
-Give me 3 best travel options from "${from}" to "${to}" for the date "${date}".
+Generate 3 best travel options for a trip from **"${from}" to "${to}"** on **"${date}"**.
 
-Include:
-✈️ **Flight** – airline, price range, duration, booking link (from platforms like [Skyscanner](https://www.skyscanner.co.in), [MakeMyTrip](https://www.makemytrip.com), [Goibibo](https://www.goibibo.com)), and budget category (**Low/Medium/High**)  
-🚆 **Train** – train name & number, classes & prices, duration, booking link (from [IRCTC](https://www.irctc.co.in) or [Trainman](https://www.trainman.in)), and budget category  (**Low/Medium/High**)
-🚌 **Bus** – direct or connecting, price range, duration, booking link (from [RedBus](https://www.redbus.in), [AbhiBus](https://www.abhibus.com)), and budget category(**Low/Medium/High**)
-**In not direct train and flight available say no available check and verfy to real time **
-**End with:**
-- A summary comparison table of minimum three flights,trains,buses as for every mode of transport mode low medium and high (in markdown table format) 
-- A short suggestion on which mode to prefer based on price and time
+---
 
-👉 Use **Markdown** formatting (including bold text, emojis, links, and markdown tables).
-Ensure all booking links point to trusted platforms that offer **discounted fares**, not generic or placeholder URLs.
+### ✈️ Flight  
+- Airline name  
+- Price range (₹)  
+- Duration  
+- Booking link (from [Skyscanner](https://www.skyscanner.co.in), [MakeMyTrip](https://www.makemytrip.com), or [Goibibo](https://www.goibibo.com))  
+- Budget category: **Low**, **Medium**, or **High**
+
+### 🚆 Train  
+- Train name & number  
+- Classes & approximate prices  
+- Duration  
+- Booking link (from [IRCTC](https://www.irctc.co.in) or [Trainman](https://www.trainman.in))  
+- Budget category: **Low**, **Medium**, or **High**
+
+### 🚌 Bus  
+- Type: Direct or Connecting  
+- Price range (₹)  
+- Duration  
+- Booking link (from [RedBus](https://www.redbus.in) or [AbhiBus](https://www.abhibus.com))  
+- Budget category: **Low**, **Medium**, or **High**
+
+🛑 If any **mode of travel is not directly available**, clearly say "**Not Available**" and suggest verifying in real time.
+
+---
+
+### 📊 Summary Comparison Table  
+Create a **markdown table** comparing at least **one Low, Medium, and High** budget option for each travel mode:
+
+| Mode   | Budget  | Price Range | Duration | Example Provider |
+|--------|---------|-------------|----------|------------------|
+| Flight | Low     | ₹...        | ... hrs  | ...              |
+| Train  | Medium  | ₹...        | ... hrs  | ...              |
+| Bus    | High    | ₹...        | ... hrs  | ...              |
+
+---
+
+### 📄 Documents Required for Travel  
+- **Government ID** (e.g., Aadhar Card, Passport, Voter ID)  
+- **Printed or digital tickets**  
+- **Travel insurance** (if available)  
+- **Student ID** or **Senior Citizen ID** (for concessions, if applicable)
+
+---
+
+### 🎒 Suggested Packing List  
+- Clothes suitable for the weather at destination  
+- Toiletries and personal hygiene items  
+- Power bank and mobile charger  
+- Water bottle & light snacks  
+- Any required medicines  
+- Travel pillow and earphones  
+- Umbrella or sunscreen (seasonal)
+
+---
+
+### 💡 Final Suggestion  
+Give a **short recommendation** on which mode is most cost-effective or time-saving for this trip.
+
+Use proper **Markdown formatting**, emojis, bold text, and verified booking links from trusted travel platforms.
 `;
-
 
 try {
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
