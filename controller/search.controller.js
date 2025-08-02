@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Replace with your real API key
+// ✅ Use your actual API key (in production, use environment variable)
 const genAI = new GoogleGenerativeAI("AIzaSyC0qzuEbZWolVJ83sIF3bTpJb5Yr-Eq6Ak");
 
 export const getTravelData = async (req, res) => {
@@ -21,8 +21,7 @@ Generate a **detailed travel plan** for a trip from **"${from}" to "${to}"** on 
       "duration": "",
       "bookingLink": "",
       "budgetCategory": "Low | Medium | High"
-    },
-    ...
+    }
   ],
   "trains": [
     {
@@ -32,8 +31,7 @@ Generate a **detailed travel plan** for a trip from **"${from}" to "${to}"** on 
       "duration": "",
       "bookingLink": "",
       "budgetCategory": "Low | Medium | High"
-    },
-    ...
+    }
   ],
   "buses": [
     {
@@ -42,8 +40,7 @@ Generate a **detailed travel plan** for a trip from **"${from}" to "${to}"** on 
       "duration": "",
       "bookingLink": "",
       "budgetCategory": "Low | Medium | High"
-    },
-    ...
+    }
   ],
   "summaryComparison": {
     "flight": { "low": "", "medium": "", "high": "" },
@@ -71,21 +68,25 @@ Generate a **detailed travel plan** for a trip from **"${from}" to "${to}"** on 
 `;
 
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+    // ✅ Correct model name (1.5-pro)
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+
+    // ✅ Call the model
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
 
-    // Attempt to safely parse the AI response
     try {
-      const json = JSON.parse(text);
+      // ✅ Clean text and parse
+      const cleaned = text.trim().replace(/```json|```/g, "");
+      const json = JSON.parse(cleaned);
       res.json(json);
     } catch (parseError) {
-      console.warn("Parsing failed, sending raw text.");
+      console.warn("❗ JSON parsing failed:", parseError.message);
       res.json({ rawText: text });
     }
   } catch (err) {
-    console.error("Gemini error:", err.message);
+    console.error("❌ Gemini API error:", err.message);
     res.status(500).json({ error: "Gemini API failed" });
   }
 };
